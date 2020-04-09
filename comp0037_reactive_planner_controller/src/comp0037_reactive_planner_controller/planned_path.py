@@ -10,9 +10,9 @@ class PlannedPath(object):
 
         # Does the path actually reach the goal or not?
         self.goalReached = False
-        
+
         # The list of waypoints, from start to finish, which make up the path.
-        # The type of data stored here depends on the 
+        # The type of data stored here depends on the
         self.waypoints = deque()
 
         # Performance information - number of waypoints, and the
@@ -27,9 +27,8 @@ class PlannedPath(object):
        # Check the tail of one list is the head of another
 
         otherPlannedPathList = list(otherPlannedPath.waypoints)
-        
-        #DOUBLE CHECK THIS!
-        #assert(list(self.waypoints)[-1].coords == otherPlannedPathList[0].coords)
+        # Tuple comparison returns true when all elements are equal
+        assert(list(self.waypoints)[-1].coords == otherPlannedPathList[0].coords)
 
         # Now go through and add the elements from the other planned path to this one.
         for i in range(len(otherPlannedPathList) - 1):
@@ -37,3 +36,8 @@ class PlannedPath(object):
 
         self.numberOfWaypoints = self.numberOfWaypoints + otherPlannedPath.numberOfWaypoints - 1
         self.travelCost = self.travelCost + otherPlannedPath.travelCost
+
+    # Michael Add-on:
+    def __repr__(self):
+        return str(list(self.waypoints))
+    __str__ = __repr__

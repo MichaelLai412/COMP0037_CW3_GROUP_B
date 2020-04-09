@@ -12,7 +12,7 @@ from comp0037_reactive_planner_controller.aisle import Aisle
 # from the definitions in occupancy_grid.py
 BLOCKED = 1.0
 FREE = 0.0
-Y_OFFSET = 28
+Y_OFFSET = 27
 X_OFFSET = 16
 BASE = (26,6)
 # d = {number: [[BASE[0] + number * X_OFFSET, BASE[1] + row*Y_OFFSET] for row in range(3)] for number in range(5)}
@@ -64,11 +64,11 @@ class ReactivePlannerController(PlannerControllerBase):
     # Choose the first aisle the robot will initially drive down.
     # This is based on the prior.
     def chooseInitialAisle(self, startCellCoords, goalCellCoords):
-        return Aisle.C
+        return Aisle.E
 
     # Choose the subdquent aisle the robot will drive down
     def chooseAisle(self, startCellCoords, goalCellCoords):
-        return Aisle.E
+        return Aisle.A
 
     # Return whether the robot should wait for the obstacle to clear or not.
     def shouldWaitUntilTheObstacleClears(self, startCellCoords, goalCellCoords):
@@ -91,22 +91,21 @@ class ReactivePlannerController(PlannerControllerBase):
         # from the start to the goal via the aisle.
         # <Michael mod>
         goals_aisle = self._aisle_to_goals_table[aisle.value][:]
-        # goals_aisle = self._correct_path_direction(startCellCoords, goals_aisle) # my note: probably no need. The assignment is build on a very complete static assumption already.
+        goals_aisle = self._correct_path_direction(startCellCoords, goals_aisle)
         goals_rest =  goals_aisle + [goalCellCoords] # my note: the complete goals forcing the pass through aisle
 
-        planned_path = self._get_path(startCellCoords, goals_rest[0])
-        if planned_path is None:
+        planed_path_buf = self._get_path(startCellCoords, goals_rest[0])
+        if planed_path_buf is None:
             return
         for i in range(1, len(goals_rest)): # note: assume it never exceeds bounds. ie. always has the padding goals_aisle
             currentPlannedPath = self._get_path(goals_rest[i-1], goals_rest[i])
             if currentPlannedPath is None: # ie. the whole path is invalid
                 return # note: early termaination. Failure was logged by side effect
 
-            planned_path.addToEnd(currentPlannedPath) # mynote: complete the whole path here
+            planed_path_buf.addToEnd(currentPlannedPath) # mynote: complete the whole path here
 
-        print('Waypoints of the passing aisle path: ', planned_path)
-        self.planner.searchGridDrawer.drawPathGraphicsWithCustomColour(planned_path, 'red')
-        return planned_path
+        print('Waypoints of the passing aisle path: ', planed_path_buf)
+        return planed_path_buf
         # <Michael mod>
 
 
